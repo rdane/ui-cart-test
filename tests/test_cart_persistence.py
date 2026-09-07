@@ -28,7 +28,7 @@ def test_product_persists_in_cart_after_relogin(authenticated_page: Page, config
 
     base.logout()
     base.go_to_sign_in()
-    LoginPage(page).login(config.email, config.password)
+    LoginPage(page).login(config.email, config.password, config.totp_secret)
     page.wait_for_url(f"{config.base_url}**")
 
     cart = base.open_cart()

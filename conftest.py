@@ -28,6 +28,6 @@ def authenticated_page(page: Page, config: Config) -> Page:
     base = BasePage(page)
     base.dismiss_cookie_banner()
     base.go_to_sign_in()
-    LoginPage(page).login(config.email, config.password)
+    LoginPage(page).login(config.email, config.password, config.totp_secret)
     page.wait_for_url(f"{config.base_url}**")
     return page
