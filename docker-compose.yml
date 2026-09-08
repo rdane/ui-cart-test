@@ -3,5 +3,7 @@ services:
     build: .
     env_file:
       - .env
+    # Required for Chromium's shared memory usage in headed/Wayland mode.
+    ipc: host
     volumes:
       - ./test-results:/app/test-results
