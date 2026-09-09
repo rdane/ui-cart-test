@@ -9,7 +9,8 @@ class BasePage:
         self.page = page
 
     def dismiss_cookie_banner(self) -> None:
-        # Banner only appears on first visit per session; ignore if absent.
+        # Reappears on later navigations too (not just the first visit), and
+        # its backdrop can block unrelated clicks until dismissed.
         button = self.page.get_by_role("button", name="Accept All Cookies")
         try:
             button.click(timeout=5_000)
@@ -17,7 +18,9 @@ class BasePage:
             pass
 
     def open_account_menu(self) -> None:
-        self.page.get_by_role("button", name="Account Menu").click()
+        # Accessible name is "Account Menu" when logged out, but becomes a
+        # numeric badge once logged in; this data attribute is stable in both states.
+        self.page.locator('[data-uic-component="Account.Trigger"]').click()
 
     def go_to_sign_in(self) -> None:
         self.open_account_menu()
@@ -26,9 +29,24 @@ class BasePage:
     def open_cart(self) -> "CartPage":
         from pages.cart_page import CartPage
 
-        # The cart trigger has no accessible name; it's identified by the
-        # numeric quantity badge rendered inside the page header.
-        self.page.locator("header").get_by_text(re.compile(r"^\d+$")).first.click()
+        self.dismiss_cookie_banner()
+        # The cart badge is a leaf element showing a bare digit; the
+        # account-menu trigger also renders an unrelated numeric badge, so
+        # it's explicitly excluded here rather than guessed by tag/order.
+        # Polls (rather than a one-shot check) since the badge renders
+        # asynchronously right after add-to-cart.
+        self.page.wait_for_function(
+            """() => {
+                const badge = Array.from(document.querySelectorAll('header *')).find(el =>
+                    el.children.length === 0 &&
+                    /^\\d+$/.test(el.textContent.trim()) &&
+                    !el.closest('[data-uic-component="Account.Trigger"]')
+                );
+                if (badge) { badge.setAttribute('data-qa-cart-badge', 'true'); return true; }
+                return false;
+            }"""
+        )
+        self.page.locator('[data-qa-cart-badge="true"]').click()
         return CartPage(self.page)
 
     def logout(self) -> None:
