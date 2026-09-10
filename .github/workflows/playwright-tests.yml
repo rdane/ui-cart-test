@@ -19,16 +19,12 @@ jobs:
           BASE_URL: https://store.ui.com/us/en
           STORE_EMAIL: ${{ secrets.STORE_EMAIL }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-          PRODUCT_PATH: /products/usw-flex-mini
-          PRODUCT_NAME: Flex Mini
           HEADLESS: "true"
         run: |
           cat <<EOF > .env
           BASE_URL=$BASE_URL
           STORE_EMAIL=$STORE_EMAIL
           STORE_PASSWORD=$STORE_PASSWORD
-          PRODUCT_PATH=$PRODUCT_PATH
-          PRODUCT_NAME=$PRODUCT_NAME
           HEADLESS=$HEADLESS
           EOF
           docker compose run --rm tests

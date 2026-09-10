@@ -8,7 +8,11 @@ class CartPage:
         self.dialog = page.get_by_role("dialog", name="Your Cart")
 
     def assert_contains_product(self, product_name: str) -> None:
+        print(f"Asserting cart contains product: {product_name!r}")
         expect(self.dialog.get_by_text(product_name, exact=False)).to_be_visible()
+
+    def cart_dialog_is_visible(self) -> bool:
+        return self.dialog.is_visible()
 
     def close(self) -> None:
         self.dialog.get_by_role("button", name="Close").click()

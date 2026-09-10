@@ -1,5 +1,4 @@
 """Handles the two-step (email, then password, then optional TOTP) account.ui.com SSO login form."""
-import re
 import time
 
 import pyotp
@@ -13,20 +12,13 @@ class LoginPage:
         self.page = page
 
     def login(self, email: str, password: str, totp_secret: str | None = None) -> None:
+        print(f"Logging in as {email}...")
         self._enter_email_or_select_remembered_account(email)
 
         password_input = self.page.locator('input[type="password"]')
         password_input.wait_for(state="visible")
         password_input.fill(password)
-
-        # Submit button testid could not be confirmed without a real account;
-        # fall back to pressing Enter which submits the form either way.
-        submit = self.page.get_by_role("button", name=re.compile("sign in|log in", re.I))
-        if submit.count() > 0:
-            submit.first.click()
-        else:
-            password_input.press("Enter")
-
+        self.page.locator('[data-testid="login-button"]').click()
         self._maybe_handle_totp(totp_secret)
         self._maybe_dismiss_trust_device_prompt()
 

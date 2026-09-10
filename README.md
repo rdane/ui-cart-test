@@ -50,9 +50,12 @@ container.
      the live production site).
    - `TOTP_SECRET` — the authenticator-app secret for that account, if it has 2FA enabled.
      Leave blank if 2FA is disabled.
-   - `PRODUCT_PATH` / `PRODUCT_NAME` — only change if you want to test a different product.
 
 `.env` is gitignored and never committed.
+
+The product used by the test (`PRODUCT_PATH` / `PRODUCT_NAME`) is a fixed fixture defined as
+constants at the top of `tests/test_cart_persistence.py` — edit them there to target a
+different product.
 
 ## Running the test
 

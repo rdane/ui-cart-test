@@ -12,8 +12,6 @@ class Config:
     base_url: str
     email: str
     password: str
-    product_path: str
-    product_name: str
     headless: bool
     totp_secret: str | None
 
@@ -30,8 +28,6 @@ def load_config() -> Config:
         base_url=os.getenv("BASE_URL", "https://store.ui.com/us/en").rstrip("/"),
         email=_require("STORE_EMAIL"),
         password=_require("STORE_PASSWORD"),
-        product_path=os.getenv("PRODUCT_PATH", "/products/usw-flex-mini"),
-        product_name=os.getenv("PRODUCT_NAME", "Flex Mini"),
         headless=os.getenv("HEADLESS", "true").lower() != "false",
         totp_secret=os.getenv("TOTP_SECRET") or None,
     )
