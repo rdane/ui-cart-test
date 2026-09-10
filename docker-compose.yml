@@ -3,7 +3,21 @@ services:
     build: .
     env_file:
       - .env
+    environment:
+      # Avoids scattering root-owned __pycache__/ dirs across the bind-mounted host
+      # tree (pages/, tests/, utils/ would each get one otherwise).
+      - PYTHONDONTWRITEBYTECODE=1
     # Required for Chromium's shared memory usage in headed/Wayland mode.
     ipc: host
     volumes:
-      - ./test-results:/app/test-results
+      # Bind-mounts the whole repo over the image's /app so code edits are picked up
+      # without rebuilding; test-results/ is a subdirectory of this and needs no
+      # separate mount. COPY . . in the Dockerfile still keeps the image self-contained
+      # (CI, `docker compose build` without this override, etc).
+      - ./:/app
+      # Anonymous volumes mask these subpaths so the (root) container doesn't expose
+      # the host's real .venv/.git into the container, or write root-owned cache
+      # files back onto the host tree.
+      - /app/.venv
+      - /app/.git
+      - /app/.pytest_cache
