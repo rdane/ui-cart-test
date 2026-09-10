@@ -2,6 +2,7 @@
 import re
 
 from playwright.sync_api import Page
+from pages.cart_page import CartPage
 
 
 class BasePage:
@@ -26,8 +27,7 @@ class BasePage:
         self.open_account_menu()
         self.page.get_by_role("link", name="Sign in").click()
 
-    def open_cart(self) -> "CartPage":
-        from pages.cart_page import CartPage
+    def open_cart(self) -> CartPage:
 
         self.dismiss_cookie_banner()
         # The cart badge is a leaf element showing a bare digit; the
